@@ -1,0 +1,426 @@
+.userProfile2 {
+  font-family: 'Arial', sans-serif;
+  background: rgb(31, 41, 55);
+  margin: 0;
+  padding: 20px;
+}
+
+.profile-container2 {
+  width: 80%;
+  margin: 20px auto;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  background: #11161e;
+  border-radius: 15px;
+
+  overflow: hidden;
+  /* Ensures that child elements do not overflow the rounded border */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.profile-header2 {
+  background: linear-gradient(to right, #11161e, #171e29);
+  /* Gradient background */
+  color: #fafafa;
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.user-name2 {
+  font-size: 24px;
+  margin: 0;
+  font-weight: 700;
+}
+
+.report-btn2 {
+  background: #cb1616;
+  /* Brighter background for the button */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.report-btn2:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  /* Button hover effect */
+}
+
+.profile-content2 {
+  display: flex;
+  flex-wrap: wrap;
+  /* Responsive fallback */
+}
+
+.left-side2 {
+  width: 300px;
+  background: #11161e;
+  color: #c5c6c7;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-picture2 {
+  width: 90%;
+  height: auto;
+  max-height: 300px;
+  border-radius: 4px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.icons2 {
+  display: flex;
+  justify-content: space-between;
+  /* Center the buttons for a balanced look */
+  gap: 20px;
+  /* Adds space between the buttons */
+  margin-bottom: 20px;
+  /* Additional spacing above and below the icon div */
+  padding: 10px;
+  background: transparent;
+  /* A different color for the div */
+  border-radius: 10px;
+  /* Rounded corners for the div */
+  width: 90%;
+  /* Adjust width as needed */
+  box-sizing: border-box;
+}
+
+.icon2 {
+  background: #f0f0f0;
+  /* Light background for the buttons */
+  padding: 10px;
+  border: 2px solid #c5c6c7;
+  /* Border to make the buttons stand out */
+  border-radius: 4px;
+  /* Slightly rounded corners for the buttons */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  /* Keep the buttons square */
+  height: 48px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  /* Smooth transition for effects */
+  fill: #2d2d2d;
+  /* Color of the SVG icon */
+}
+
+/* Hover effect for icons */
+.icon2:hover {
+  background: #e1e1e1;
+  /* Lighter background on hover */
+  border-color: #ffffff;
+  /* Lighter border on hover */
+  fill: #1a1a1a;
+  /* Change SVG icon color on hover */
+}
+
+/* Focus styles for accessibility */
+.icon2:focus {
+  outline: none;
+  border-color: #555;
+  /* More prominent border color on focus */
+  box-shadow: 0 0 0 3px #555;
+  /* Custom focus indicator */
+}
+
+
+
+.user-info2 {
+  background: #171e29;
+  /* A darker background for contrast */
+
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  /* Separation from any elements that may follow */
+  width: calc(100% - 10px);
+  /* Adjust width based on padding */
+  box-sizing: border-box;
+}
+
+.user-info2 p {
+  margin: 4px 0;
+  /* Reduced margin for a more compact look */
+  line-height: 1.6;
+  font-weight: bold;
+  color: white;
+  font-size: 14px;
+  /* Smaller font size for a cleaner look */
+}
+
+.info-value2 {
+  color: #c5c6c7;
+  /* Brighter color for the dynamic values */
+  font-weight: 500;
+  /* Make dynamic values pop */
+  margin-left: 4px;
+  /* Space between label and value */
+  display: inline-block;
+  /* To enable margin if needed */
+}
+
+/* Add a hover effect for interactivity */
+.user-info2 p:hover .info-value2 {
+  text-decoration: underline;
+  /* Underline on hover for a visual cue */
+}
+
+
+.info-detail2 {
+  color: #9da5b1;
+  font-weight: bold;
+}
+
+
+
+
+
+
+.right-panel2 {
+  background-color: #171e29;
+  flex: 1;
+  /* Takes the remaining space */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.anime-stats2,
+.last-updates2,
+.reportPanel,
+.favorites2 {
+  background: #11161e;
+  color: #e2e2e2;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.anime-stats2 h2,
+.last-updates2 h2,
+.reportPanel h2,
+.favorites2 h2 {
+  font-size: 20px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #3a3a3a;
+  padding-bottom: 8px;
+  font-weight: 600;
+}
+
+.stats2 {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.left-stats2 p,
+.right-stats2 p {
+  margin: 4px 0;
+  color: #c5c6c7;
+}
+
+.left-stats2 p::before,
+.right-stats2 p::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: #2ecc71;
+}
+
+.right-stats2 p:nth-child(2)::before,
+.left-stats2 p:nth-child(2)::before {
+  background: #9b59b6;
+}
+
+/* Example of changing the dot color for specific items */
+.left-stats2 p:nth-child(3)::before,
+.right-stats2 p:nth-child(3)::before {
+  background: #f1c40f;
+}
+
+/* Completed */
+.right-stats2 p:nth-child(4)::before,
+.left-stats2 p:nth-child(4)::before {
+  background: #e74c3c;
+}
+
+/* Dropped */
+.left-stats2 p:nth-child(5)::before {
+  background: #3498db;
+}
+
+/* Plan to Watch */
+
+.anime-update2 {
+  display: flex;
+  align-items: center;
+  background: #171e29;
+  /* Dark background for contrast */
+  padding: 10px;
+  margin-bottom: 16px;
+  /* Spacing between entries */
+  border-radius: 4px;
+  /* Slight rounding of corners */
+  color: #ffffff;
+}
+
+.anime-update2 img {
+  width: 50px;
+  /* Fixed width for the image */
+  height: auto;
+  /* Maintain aspect ratio */
+  border-radius: 4px;
+  /* Rounded corners for the image */
+  margin-right: 16px;
+  /* Space between image and text */
+}
+
+.anime-update2 p {
+  margin: 0;
+  padding: 0;
+  font-weight: 500;
+  flex-grow: 1;
+  /* Allows the title to take up available space */
+  font-size: 17px;
+  /* Larger font size for the title */
+}
+
+.anime-update2 p:last-child {
+  flex-grow: 0;
+  /* Prevent the time from growing */
+  margin-left: auto;
+  /* Pushes the time to the far right */
+  font-size: 14px;
+  /* Smaller font size for the time */
+  opacity: 0.7;
+  /* Slightly fade the time for a subtle look */
+}
+
+
+
+.favorites2 {
+  margin: 20px 0;
+  /* Adjust spacing as needed */
+}
+
+.favorites2 h2 {
+  margin-bottom: 16px;
+  /* Spacing between the title and the grid */
+  /* Adjust color as needed */
+}
+
+.favorites-grid2 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  /* Creates 4 columns */
+  grid-gap: 20px;
+  justify-items: center;
+  /* Adjust gap between grid items as needed */
+}
+
+.anime-item2 {
+  background: #171e29;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 95%;
+  /* Adjust width as needed */
+  margin: 0 auto;
+  /* Center the item in the grid column */
+  transition: transform 0.3s, z-index 0s;
+  /* Smooth transition for transform and immediate application of z-index */
+  z-index: 1;
+  /* Default z-index */
+}
+
+.anime-item2:hover {
+  cursor: pointer;
+  transform: rotate(-1deg);
+  z-index: 2;
+  /* Increase z-index on hover */
+}
+
+
+.anime-item2 img {
+  width: 100%;
+  /* Full width of the grid column */
+  height: 270px;
+  /* Maintain aspect ratio */
+  display: block;
+  /* Remove extra space below the image */
+}
+
+.anime-title2 {
+  text-align: center;
+  /* Center-align the title */
+  font-size: 16px;
+  /* Adjust font size as needed */
+  color: #cccccc;
+  /* Adjust text color as needed */
+  padding: 0px;
+  font-weight: 700;
+  /* Padding inside the anime item */
+}
+
+
+
+/* CustomDatePicker.css */
+.customDatePickerWrapper {
+  width: auto;
+  margin-bottom: 25px;
+  /* Adjust based on your preference */
+}
+
+.customDatePickerInput {
+  width: 100%;
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Soft shadow for depth */
+  transition: border-color 0.3s;
+  color: #1a1a1a;
+}
+
+.customDatePickerInput:focus {
+  border-color: #007bff;
+  /* Highlight color when focused */
+  outline: none;
+}
+
+.customDatePickerCalendar {
+  border-radius: 10px;
+  /* Rounded corners for the calendar */
+  border: none;
+  /* Remove default border */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  /* More pronounced shadow for the calendar */
+}
+
+.customTimePickerMorning .react-datepicker__time-list-item {
+  background-color: #f0f8ff;
+  /* Lighter background for morning times */
+}
+
+.customTimePickerEvening .react-datepicker__time-list-item {
+  background-color: #fde8e4;
+  /* Different background for evening times */
+}

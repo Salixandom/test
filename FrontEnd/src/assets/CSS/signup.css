@@ -1,0 +1,132 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+
+}
+
+.signup-container {
+    display: flex;
+    justify-content: flex-start;
+    /* Align the form to the right */
+    align-items: center;
+    height: 100vh;
+    padding-left: 10%;
+    background-image: url('./kakashi.png');
+    /* Add your desired background image here */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.signup-form {
+    background: rgba(250, 250, 250, 0.2);
+    backdrop-filter: blur(15px);
+    padding: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    transition: transform 0.3s ease-in-out;
+    animation: slideInFromRight 2s ease-out forwards;
+
+    border: 2px solid transparent;
+    border-radius: 10px;
+}
+
+@keyframes slideInFromRight {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes movingBorder {
+    0% {
+        border-image-source: linear-gradient(270deg, #0056b3, #007bff);
+    }
+
+    100% {
+        border-image-source: linear-gradient(270deg, #007bff, #0056b3);
+    }
+}
+
+
+.form-group input[type="email_username"],
+.form-group input[type="email"],
+.form-group input[type="text"],
+.form-group input[type="password"],
+.signup-btn-form {
+    width: 93%;
+    padding: 10px;
+    margin-bottom: 2px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.form-group input[type="email"],
+.form-group input[type="text"],
+.form-group input[type="password"] {
+
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+
+
+.signup-btn-form {
+    /* ... same styles as before ... */
+    background: linear-gradient(to right, #0056b3, #007bff);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: 98%;
+}
+
+.signup-btn-form:hover {
+    background: linear-gradient(to right, #007bff, #0056b3);
+}
+
+/* Additional designs for terms of service checkbox */
+#terms {
+    margin-right: 5px;
+}
+
+/* Styling the label to be next to the checkbox */
+label[for="terms"] {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+label[for="email"],
+label[for="username"],
+label[for="first_name"],
+label[for="last_name"],
+label[for="password"],
+label[for="confirm_password"] {
+    display: inline-block;
+    vertical-align: middle;
+    color: rgb(212, 207, 207);
+}
+
+label[for="terms"] {
+    color: rgb(165, 165, 165);
+}
+
+/* Ensure to update the path to your actual background image */

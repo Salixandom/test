@@ -1,0 +1,457 @@
+-- Creating user_table
+CREATE TABLE user_table (
+    user_id SERIAL PRIMARY KEY,
+    reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    profile_picture BYTEA,
+    username VARCHAR(255) NOT NULL,
+    friends INTEGER[],
+    first_name VARCHAR(255) NOT NULL,
+    second_name VARCHAR(255)
+);
+
+-- Creating anime_table
+CREATE TABLE anime_table (
+    Anime_ID SERIAL PRIMARY KEY,
+    Title VARCHAR(255) NOT NULL,
+    Release_Date DATE,
+    Description TEXT,
+    Cover_Image VARCHAR(255),
+    Average_Rating DECIMAL(3, 2),
+    Season_No INTEGER,
+    Ongoing_Status BOOLEAN,
+    Runtime INTEGER,
+    Airing_Season VARCHAR(50),
+    Favorites INTEGER,
+    Manga BOOLEAN,
+    Showtype VARCHAR(50),
+    Language VARCHAR(50)
+);
+
+-- Creating rating table
+CREATE TABLE rating (
+    Rating_ID SERIAL PRIMARY KEY,
+    User_ID INTEGER,
+    Anime_ID INTEGER,
+    Rating_Score INTEGER,
+    FOREIGN KEY (User_ID) REFERENCES user_table(user_id),
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID)
+);
+
+-- Updating the average rating trigger
+CREATE OR REPLACE FUNCTION update_average_rating()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE anime_table
+    SET Average_Rating = (
+        SELECT AVG(Rating_Score::DECIMAL(3, 2))
+        FROM rating
+        WHERE rating.Anime_ID = NEW.Anime_ID
+    )
+    WHERE anime_table.Anime_ID = NEW.Anime_ID;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Creating trigger to update average rating on rating changes
+CREATE TRIGGER rating_after_insert
+AFTER INSERT ON rating
+FOR EACH ROW
+EXECUTE FUNCTION update_average_rating();
+
+CREATE TRIGGER rating_after_update
+AFTER UPDATE ON rating
+FOR EACH ROW
+EXECUTE FUNCTION update_average_rating();
+
+CREATE TRIGGER rating_after_delete
+AFTER DELETE ON rating
+FOR EACH ROW
+EXECUTE FUNCTION update_average_rating();
+
+-- Creating season table
+CREATE TABLE season (
+    Season_ID SERIAL PRIMARY KEY,
+    Anime_ID INTEGER,
+    Season_No INTEGER,
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID)
+);
+
+-- Creating episode table
+CREATE TABLE episode (
+    Episode_ID SERIAL PRIMARY KEY,
+    Anime_ID INTEGER,
+    Episode_No INTEGER,
+    Title VARCHAR(255),
+    Release_Date DATE,
+    Duration INTEGER,
+    Season_ID INTEGER,
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID),
+    FOREIGN KEY (Season_ID) REFERENCES season(Season_ID)
+);
+
+CREATE TABLE trailer (
+    Trailer_ID SERIAL PRIMARY KEY,
+    Anime_ID INTEGER,
+    Trailer_Title VARCHAR(255),
+    Video_URL VARCHAR(255), -- You might want to use an appropriate data type for video URLs
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID)
+);
+
+-- Creating soundtrack table
+CREATE TABLE soundtrack (
+    Track_ID SERIAL PRIMARY KEY,
+    Anime_ID INTEGER,
+    Name VARCHAR(255),
+    Artist VARCHAR(255),
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID)
+);
+
+-- Creating keyword table
+CREATE TABLE keyword (
+    Keyword_ID SERIAL PRIMARY KEY,
+    Keyword_Name VARCHAR(255) UNIQUE NOT NULL
+);
+
+-- Creating anime_keyword junction table
+CREATE TABLE anime_keyword (
+    Anime_ID INTEGER,
+    Keyword_ID INTEGER,
+    PRIMARY KEY (Anime_ID, Keyword_ID),
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID),
+    FOREIGN KEY (Keyword_ID) REFERENCES keyword(Keyword_ID)
+);
+
+
+-- Creating user_watchlist table
+CREATE TABLE user_watchlist (
+    User_ID INTEGER,
+    Anime_ID INTEGER,
+    Season_ID INTEGER,
+    PRIMARY KEY (User_ID, Anime_ID, Season_ID),
+    Status VARCHAR(20), -- Status can be 'Watching', 'Completed', etc.
+    FOREIGN KEY (User_ID) REFERENCES user_table(user_id),
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID),
+    FOREIGN KEY (Season_ID) REFERENCES season(Season_ID)
+);
+
+-- Creating user_completedlist table
+CREATE TABLE user_completedlist (
+    User_ID INTEGER,
+    Anime_ID INTEGER,
+    Season_ID INTEGER,
+    PRIMARY KEY (User_ID, Anime_ID, Season_ID),
+    FOREIGN KEY (User_ID) REFERENCES user_table(user_id),
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID),
+    FOREIGN KEY (Season_ID) REFERENCES season(Season_ID)
+);
+
+-- Creating user_watched table
+CREATE TABLE user_watched (
+    User_ID INTEGER,
+    Anime_ID INTEGER,
+    Season_ID INTEGER,
+    Episode_ID INTEGER,
+    PRIMARY KEY (User_ID, Anime_ID, Season_ID, Episode_ID),
+    FOREIGN KEY (User_ID) REFERENCES user_table(user_id),
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID),
+    FOREIGN KEY (Season_ID) REFERENCES season(Season_ID),
+    FOREIGN KEY (Episode_ID) REFERENCES episode(Episode_ID)
+);
+
+-- Trigger function to update watchlist, completedlist, and watchedlist
+CREATE OR REPLACE FUNCTION update_lists()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- If an anime or season is set to 'Watching', remove from completedlist and watchedlist
+    IF NEW.Status = 'Watching' THEN
+        DELETE FROM user_completedlist
+        WHERE User_ID = NEW.User_ID AND Anime_ID = NEW.Anime_ID AND Season_ID = NEW.Season_ID;
+
+        DELETE FROM user_watched
+        WHERE User_ID = NEW.User_ID AND Anime_ID = NEW.Anime_ID AND Season_ID = NEW.Season_ID;
+
+    -- If an anime or season is set to 'Watched', remove from watchlist and watchedlist
+    ELSIF NEW.Status = 'Watched' THEN
+        DELETE FROM user_watchlist
+        WHERE User_ID = NEW.User_ID AND Anime_ID = NEW.Anime_ID AND Season_ID = NEW.Season_ID;
+
+        DELETE FROM user_watched
+        WHERE User_ID = NEW.User_ID AND Anime_ID = NEW.Anime_ID AND Season_ID = NEW.Season_ID;
+
+    -- If an anime or season is set to 'Completed', remove from watchlist and watchedlist
+    ELSIF NEW.Status = 'Completed' THEN
+        DELETE FROM user_watchlist
+        WHERE User_ID = NEW.User_ID AND Anime_ID = NEW.Anime_ID AND Season_ID = NEW.Season_ID;
+
+        DELETE FROM user_watched
+        WHERE User_ID = NEW.User_ID AND Anime_ID = NEW.Anime_ID AND Season_ID = NEW.Season_ID;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to update lists after INSERT or UPDATE on user_watchlist
+CREATE TRIGGER update_lists_watchlist
+AFTER INSERT OR UPDATE ON user_watchlist
+FOR EACH ROW
+EXECUTE FUNCTION update_lists();
+
+-- Trigger to update lists after INSERT or UPDATE on user_completedlist
+CREATE TRIGGER update_lists_completedlist
+AFTER INSERT OR UPDATE ON user_completedlist
+FOR EACH ROW
+EXECUTE FUNCTION update_lists();
+
+-- Trigger to update lists after INSERT or UPDATE on user_watched
+CREATE TRIGGER update_lists_watched
+AFTER INSERT OR UPDATE ON user_watched
+FOR EACH ROW
+EXECUTE FUNCTION update_lists();
+
+
+-- Creating review table
+CREATE TABLE review (
+    Review_ID SERIAL PRIMARY KEY,
+    User_ID INTEGER,
+    Anime_ID INTEGER,
+    Rating_Score INTEGER,
+    Review_Text TEXT,
+    Review_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (User_ID) REFERENCES user_table(user_id),
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID)
+);
+
+-- Trigger function to update review table after INSERT or UPDATE on rating
+CREATE OR REPLACE FUNCTION update_review_rating()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE review
+    SET Rating_Score = NEW.Rating_Score
+    WHERE User_ID = NEW.User_ID AND Anime_ID = NEW.Anime_ID;
+
+    -- If no rows were updated, do nothing
+    IF NOT FOUND THEN
+        -- No existing entry found in review table, do nothing
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to update review table after INSERT or UPDATE on rating
+CREATE TRIGGER update_review_after_rating
+AFTER INSERT OR UPDATE ON rating
+FOR EACH ROW
+EXECUTE FUNCTION update_review_rating();
+
+-- Trigger function to update rating table after INSERT or UPDATE on review
+CREATE OR REPLACE FUNCTION update_rating_review()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE rating
+    SET Rating_Score = NEW.Rating_Score
+    WHERE User_ID = NEW.User_ID AND Anime_ID = NEW.Anime_ID;
+
+    -- If no rows were updated, do nothing
+    IF NOT FOUND THEN
+        -- No existing entry found in rating table, do nothing
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to update rating table after INSERT or UPDATE on review
+CREATE TRIGGER update_rating_after_review
+AFTER INSERT OR UPDATE ON review
+FOR EACH ROW
+EXECUTE FUNCTION update_rating_review();
+
+
+-- Creating comment table
+CREATE TABLE comment (
+    Comment_ID SERIAL PRIMARY KEY,
+    User_ID INTEGER,
+    Anime_ID INTEGER,
+    Season_ID INTEGER,
+    Episode_ID INTEGER,
+    Comment_Text TEXT,
+    Comment_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Upvote_Count INTEGER DEFAULT 0,
+    Downvote_Count INTEGER DEFAULT 0,
+    FOREIGN KEY (User_ID) REFERENCES user_table(user_id),
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID),
+    FOREIGN KEY (Season_ID) REFERENCES season(Season_ID),
+    FOREIGN KEY (Episode_ID) REFERENCES episode(Episode_ID)
+);
+
+-- Creating reply table
+CREATE TABLE reply (
+    Reply_ID SERIAL PRIMARY KEY,
+    User_ID INTEGER,
+    Comment_ID INTEGER,
+    Reply_Text TEXT,
+    Reply_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Upvote_Count INTEGER DEFAULT 0,
+    Downvote_Count INTEGER DEFAULT 0,
+    FOREIGN KEY (User_ID) REFERENCES user_table(user_id),
+    FOREIGN KEY (Comment_ID) REFERENCES comment(Comment_ID)
+);
+
+-- Creating comment_vote table
+CREATE TABLE comment_vote (
+    Comment_ID INTEGER,
+    User_ID INTEGER,
+    Vote_Value INTEGER, -- +1 for upvote, -1 for downvote
+    PRIMARY KEY (Comment_ID, User_ID),
+    FOREIGN KEY (Comment_ID) REFERENCES comment(Comment_ID),
+    FOREIGN KEY (User_ID) REFERENCES user_table(user_id)
+);
+
+-- Creating reply_vote table
+CREATE TABLE reply_vote (
+    Reply_ID INTEGER,
+    User_ID INTEGER,
+    Vote_Value INTEGER, -- +1 for upvote, -1 for downvote
+    PRIMARY KEY (Reply_ID, User_ID),
+    FOREIGN KEY (Reply_ID) REFERENCES reply(Reply_ID),
+    FOREIGN KEY (User_ID) REFERENCES user_table(user_id)
+);
+
+-- Trigger function to update comment upvote/downvote counts
+CREATE OR REPLACE FUNCTION update_comment_vote_count()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE comment
+    SET Upvote_Count = (SELECT COUNT(*) FROM comment_vote WHERE Comment_ID = NEW.Comment_ID AND Vote_Value = 1),
+        Downvote_Count = (SELECT COUNT(*) FROM comment_vote WHERE Comment_ID = NEW.Comment_ID AND Vote_Value = -1)
+    WHERE Comment_ID = NEW.Comment_ID;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to update comment upvote/downvote counts after INSERT or UPDATE or DELETE on comment_vote
+CREATE TRIGGER update_comment_vote_count_trigger
+AFTER INSERT OR UPDATE OR DELETE ON comment_vote
+FOR EACH ROW
+EXECUTE FUNCTION update_comment_vote_count();
+
+-- Trigger function to update reply upvote/downvote counts
+CREATE OR REPLACE FUNCTION update_reply_vote_count()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE reply
+    SET Upvote_Count = (SELECT COUNT(*) FROM reply_vote WHERE Reply_ID = NEW.Reply_ID AND Vote_Value = 1),
+        Downvote_Count = (SELECT COUNT(*) FROM reply_vote WHERE Reply_ID = NEW.Reply_ID AND Vote_Value = -1)
+    WHERE Reply_ID = NEW.Reply_ID;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to update reply upvote/downvote counts after INSERT or UPDATE or DELETE on reply_vote
+CREATE TRIGGER update_reply_vote_count_trigger
+AFTER INSERT OR UPDATE OR DELETE ON reply_vote
+FOR EACH ROW
+EXECUTE FUNCTION update_reply_vote_count();
+
+
+-- Creating user_favorite_anime_list table
+CREATE TABLE user_favorite_anime_list (
+    User_ID INTEGER,
+    Anime_ID INTEGER,
+    PRIMARY KEY (User_ID, Anime_ID),
+    FOREIGN KEY (User_ID) REFERENCES user_table(user_id),
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID)
+);
+
+-- Trigger function to update anime_table Favorites column after INSERT or DELETE on user_favorite_anime_list
+CREATE OR REPLACE FUNCTION update_anime_favorites_count()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE anime_table
+    SET Favorites = (
+        SELECT COUNT(*) FROM user_favorite_anime_list WHERE Anime_ID = NEW.Anime_ID
+    )
+    WHERE Anime_ID = NEW.Anime_ID;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to update anime_table Favorites column after INSERT or DELETE on user_favorite_anime_list
+CREATE TRIGGER update_anime_favorites_count_trigger
+AFTER INSERT OR DELETE ON user_favorite_anime_list
+FOR EACH ROW
+EXECUTE FUNCTION update_anime_favorites_count();
+
+
+-- Creating studio table
+CREATE TABLE studio (
+    Studio_ID SERIAL PRIMARY KEY,
+    Studio_Name VARCHAR(255) NOT NULL,
+    Description TEXT,
+    Producers VARCHAR(255) -- You can adjust the data type based on your specific needs
+);
+
+
+-- Creating anime_studio junction table
+CREATE TABLE anime_studio (
+    Anime_ID INTEGER,
+    Studio_ID INTEGER,
+    PRIMARY KEY (Anime_ID, Studio_ID),
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID),
+    FOREIGN KEY (Studio_ID) REFERENCES studio(Studio_ID)
+);
+
+
+-- Creating genre table
+CREATE TABLE genre (
+    Genre_ID SERIAL PRIMARY KEY,
+    Genre_Name VARCHAR(255) NOT NULL,
+    Description TEXT
+);
+
+
+-- Creating anime_genre junction table
+CREATE TABLE anime_genre (
+    Anime_ID INTEGER,
+    Genre_ID INTEGER,
+    PRIMARY KEY (Anime_ID, Genre_ID),
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID),
+    FOREIGN KEY (Genre_ID) REFERENCES genre(Genre_ID)
+);
+
+
+-- Creating character table
+CREATE TABLE character (
+    Character_ID SERIAL PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    Image VARCHAR(255),
+    Anime_ID INTEGER,
+    FOREIGN KEY (Anime_ID) REFERENCES anime_table(Anime_ID)
+);
+
+-- Creating voice_actor table
+CREATE TABLE voice_actor (
+    VA_ID SERIAL PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    Gender VARCHAR(10),
+    Description TEXT,
+    Image VARCHAR(255),
+    Date_of_Birth DATE
+);
+
+-- Creating character_voice_actor junction table
+CREATE TABLE character_voice_actor (
+    Character_ID INTEGER,
+    VA_ID INTEGER,
+    PRIMARY KEY (Character_ID, VA_ID),
+    FOREIGN KEY (Character_ID) REFERENCES character(Character_ID),
+    FOREIGN KEY (VA_ID) REFERENCES voice_actor(VA_ID)
+);

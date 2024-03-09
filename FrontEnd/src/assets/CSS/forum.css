@@ -1,0 +1,276 @@
+.discussion_body {
+    background: rgb(31, 41, 55);
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+
+
+.discussion-container {
+    width: 85%;
+    margin: 20px auto;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding: 20px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background-color: #11161E;
+    /* Dark background for the container */
+}
+
+.discussion-topic {
+    background-color: #171E29;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.discussion-topic-details {
+    flex-grow: 1;
+}
+
+.discussion-topic h1 {
+    font-size: 1.8em;
+    color: #e7e7e7;
+    margin: 0 0 2px 0;
+    flex: 1;
+}
+
+.discussion-topic-author {
+    color: #bbb;
+    font-size: 0.9em;
+}
+
+.discussion-reply {
+    background-color: #171E29;
+    padding: 15px;
+    border-radius: 8px;
+    position: relative;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.discussion-reply:before {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: -10px;
+    width: 80%;
+    height: 1px;
+    background: #333;
+    /* Separator line */
+}
+
+.discussion-reply-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.discussion-timestamp,
+.discussion-reply-number {
+    color: #757575;
+    font-size: 0.8em;
+}
+
+.discussion-reply-body {
+    display: flex;
+    flex-grow: 1;
+    align-items: stretch;
+    /* Align the text to the top of the image */
+}
+
+.discussion-user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-right: 15px;
+    background-color: transparent;
+}
+
+.discussion-profile-pic {
+    width: 80px;
+    /* Fixed width */
+    height: 120px;
+    /* Take full height of the parent */
+    object-fit: cover;
+    /* Cover the whole area without losing aspect ratio */
+    border-radius: 0;
+    /* Greenish border for the profile picture */
+}
+
+.discussion-username {
+    color: #4CAF50;
+    /* Greenish tone for usernames */
+
+    margin-top: 10px;
+    /* Spacing between image and username */
+    width: auto;
+    /* Auto width according to content */
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.discussion-comment {
+    background-color: #242f40;
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 4px;
+    border-left: 3px solid #4CAF50;
+    /* Add a left border to make it distinguishable */
+}
+
+.discussion-comment p {
+    margin: 0;
+    word-wrap: break-word;
+    /* Ensure long words do not overflow */
+}
+
+
+
+
+.discussion-reply-button {
+
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 10px 0 10px 10px;
+    margin-top: 50px;
+}
+
+.discussion-reply-box {
+    /* Initially hidden */
+    margin-top: 10px;
+}
+
+/* .discussion-hidden {
+} */
+
+.discussion-reply-text {
+    width: 100%;
+    height: 100px;
+    border-radius: 4px;
+    border: 1px solid #333;
+    padding: 10px;
+    color: #ddd;
+    background-color: #242f40;
+}
+
+.discussion-post-reply {
+    display: block;
+    width: max-content;
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.discussion-vote-controls {
+    display: flex;
+    justify-content: flex-end;
+    /* Align to the right */
+    align-items: center;
+    position: absolute;
+    /* Position it at the bottom right */
+    right: 15px;
+    /* Distance from right */
+    bottom: 15px;
+    /* Distance from bottom */
+}
+
+.discussion-upvote,
+.discussion-downvote {
+    background-color: #333;
+    color: #ddd;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin: 0 5px;
+}
+
+.discussion-vote-count {
+    color: #4CAF50;
+}
+
+
+/*extra*/
+
+.discussion-list-container {
+    background-color: #1e1e1e;
+    /* Dark theme background */
+    color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.discussion-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+
+.add-discussion-list-button {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    /* Theme color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.discussion-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #1F2937;
+    border-radius: 7px;
+}
+
+.discussion-list-info {
+    flex-grow: 1;
+}
+
+.discussion-list-title {
+    font-weight: bold;
+    font-size: 1.2em;
+    /* Make title bold */
+}
+
+.discussion-list-author {
+    margin: 0;
+    font-size: 0.9em;
+    /* Slightly smaller text for author and date */
+    color: #bbb;
+}
+
+.discussion-list-stats {
+    text-align: right;
+    /* Aligns the stats to the right */
+}
+
+.discussion-list-reply-count {
+    margin: 5px;
+    font-size: 0.8em;
+    /* Slightly smaller text for reply count */
+    color: #959b95;
+    /* Theme color */
+}

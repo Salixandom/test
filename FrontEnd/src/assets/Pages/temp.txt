@@ -1,0 +1,437 @@
+import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { updateUser, updateFailure, logout, changePassword, changePasswordFailure } from '../Redux/authSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import ImageSelector from './ImageSelector';
+
+const Profile = () => {
+
+    const { user } = useSelector((state) => state.auth);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [formValues, setFormValues] = useState({
+        joinDate: 'N/A',
+        email: '',
+        username: '',
+        displayName: '',
+        firstName: '',
+        lastName: '',
+        displayPic: '../../../public/Gojo.jpeg',
+        friends: '',
+        password: '',
+    });
+
+    const [editMode, setEditMode] = useState(false);
+    const [changePasswordMode, setChangePasswordMode] = useState(false);
+    const [err, setError] = useState(null);
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [isImageSelectorOpen, setIsImageSelectorOpen] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const openImageSelector = () => setIsImageSelectorOpen(true);
+    const closeImageSelector = () => setIsImageSelectorOpen(false);
+
+    const handleImageSelect = async (image) => {
+
+        try {
+            const response = await axios.post('http://localhost:5000/profile/set-avatar', {
+                user_ud: user.user_id,
+                image_id: image.id,
+                image_url: image.url,
+                image_alt_text: image.alt_text
+            })
+
+            if (response.status === 200) {
+                setSelectedImage(image.url);
+            }
+        } catch (error) {
+            setError(error.message)
+            console.error("Error updating avatar: ", error.message);
+        }
+
+        closeImageSelector();
+    }
+
+    useEffect(() => {
+        if (user) {
+            setFormValues({
+                joinDate: user.reg_date || 'N/A',
+                email: user.email || '',
+                username: user.username || '',
+                displayName: user.display_name || '',
+                firstName: user.first_name || '',
+                lastName: user.second_name || '',
+                displayPic: user.url || (user.profile_picture || '../../../public/Gojo.jpeg'),
+                friends: user.friends || '',
+                password: '',
+            })
+        }
+    }, [user])
+
+    const handleAvatarChange = async (e) => {
+        const file = e.target.files[0];
+
+        if (file) {
+            const formData = new FormData();
+            formData.append('avatar', file);
+
+            try {
+                const response = await axios.post(`http://localhost:5000/profile/upload-avatar/${user.user_id}`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                })
+
+                if (response.status === 200) {
+                    console.log(response.data);
+                    const { profile_picture: updatedAvatar } = response.data.user;
+                    setFormValues((prevValue) => ({ ...prevValue, displayPic: updatedAvatar }))
+                    console.log('Avatar uploaded successfully')
+                }
+            } catch (error) {
+                console.error('Error uploading avatar: ', error.message);
+            }
+        }
+    }
+
+    const handleEditModeToggle = () => {
+        setEditMode(!editMode)
+        setError(null);
+    }
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setError(null);
+
+        switch (name) {
+            case 'first_name':
+                setFormValues({ ...formValues, firstName: value });
+                break;
+            case 'last_name':
+                setFormValues({ ...formValues, lastName: value });
+                break;
+            case 'new_password':
+                setFormValues({ ...formValues, password: value });
+                break;
+            case 'display_name':
+                setFormValues({ ...formValues, displayName: value });
+                break;
+            case 'confirm_password':
+                setConfirmPassword(value);
+                break;
+            default:
+                break;
+        }
+    };
+
+    const handleSave = async () => {
+        try {
+            const response = await axios.post('http://localhost:5000/profile/update', {
+                first_name: formValues.firstName,
+                last_name: formValues.lastName,
+                display_name: formValues.displayName,
+                user_id: user.user_id,
+            })
+
+            if (response.status === 200) {
+                setEditMode(false);
+                const data = response.data;
+
+                const originalDate = new Date(data.user.reg_date)
+                const day = originalDate.getDate();
+                const month = originalDate.getMonth() + 1;
+                const year = originalDate.getFullYear();
+                const formattedDate = `${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
+                data.user.reg_date = formattedDate;
+
+                setConfirmPassword('');
+                setError(null);
+                dispatch(updateUser(data.user));
+            }
+            else {
+                setError(response.data.message);
+                dispatch(updateFailure(response.data.message));
+            }
+        } catch (err) {
+            if (err.response && err.response.status === 400) {
+                setError(err.response.data.message)
+            }
+            else {
+                setError('An unexpected error occurred')
+                dispatch(updateFailure('An unexpected error occurred'));
+            }
+            console.error('Error during updating user', err.message);
+        }
+    }
+
+    const handleLogout = () => {
+        dispatch(logout())
+        navigate('/home');
+    }
+
+    const toggleChangePasswordMode = () => {
+        setChangePasswordMode(!changePasswordMode);
+        setError(null);
+    }
+
+    const handleTogglePassword = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleChangePassword = async () => {
+        try {
+            const response = await axios.post('http://localhost:5000/profile/change-pass', {
+                user_id: user.user_id,
+                new_password: formValues.password,
+                confirmPassword,
+            })
+
+            if (response.status === 200) {
+                setEditMode(false);
+                setChangePasswordMode(false);
+                const data = response.data;
+
+                const originalDate = new Date(data.user.reg_date)
+                const day = originalDate.getDate();
+                const month = originalDate.getMonth() + 1;
+                const year = originalDate.getFullYear();
+                const formattedDate = `${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
+                data.user.reg_date = formattedDate;
+
+                setConfirmPassword('');
+                setError(null);
+                dispatch(changePassword(data.user));
+            }
+            else {
+                setError(response.data.message);
+                dispatch(changePasswordFailure(response.data.message));
+            }
+        } catch (err) {
+            if (err.response && err.response.status === 400) {
+                setError(err.response.data.message)
+            }
+            else {
+                setError('An unexpected error occurred')
+                dispatch(changePasswordFailure('An unexpected error occurred'));
+            }
+            console.error('Error during changing password', err.message);
+        }
+    }
+
+    return (
+        <>
+            <main className="profile-container">
+                <div className="profile-sidebar">
+                    {/* <label htmlFor='avatar' className='avatar-label'>
+                        <img src={formValues.displayPic} alt="User Avatar" className="profile-avatar" />
+                    </label>
+                    <input
+                        type='file'
+                        id='avatar'
+                        name='avatar'
+                        accept='image/*'
+                        style={{ display: 'none' }}
+                        onChange={handleAvatarChange}
+                    /> */}
+                    <div onClick={openImageSelector}>
+                        <img src={selectedImage} alt="User Avatar" className="profile-avatar" />
+                        <h2
+                            className="username-sidebar"
+                        >{formValues.displayName}</h2>
+                        <ImageSelector isOpen={isImageSelectorOpen} onSelectImage={handleImageSelect} onRequestClose={closeImageSelector} />
+                    </div>
+                    <button className="logout-btn" onClick={handleLogout}>Log out</button>
+                </div>
+
+                <div className="profile-content">
+                    <nav className="profile-nav">
+                        <ul>
+                            <li><Link to="/profile">Overview</Link></li>
+                            <li><Link to="#">Anime List</Link></li>
+                            <li><Link to="#">Manga List</Link></li>
+                            <li><Link to="#">Favorites</Link></li>
+                            <li><Link to="#">Stats</Link></li>
+                            <li><Link to="#">Social</Link></li>
+                            <li><Link to="#">Reviews</Link></li>
+                            <li><Link to="#">Submissions</Link></li>
+                        </ul>
+                    </nav>
+                    <section className="profile-details">
+                        <form className="profile-form">
+                            <div className="form-group">
+                                <label htmlFor="join-date">Join date</label>
+                                <input
+                                    type="text"
+                                    id="join-date"
+                                    name="join_date"
+                                    value={formValues.joinDate}
+                                    disabled
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="email">Email address</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    value={formValues.email}
+                                    disabled
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="username">Username</label>
+                                <input
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    value={formValues.username}
+                                    disabled
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="display-name">Display name</label>
+                                {editMode ? (
+                                    <input
+                                        type="text"
+                                        id="display-name"
+                                        name="display_name"
+                                        value={formValues.displayName}
+                                        onChange={handleInputChange}
+                                    />
+                                ) : (
+                                    <input
+                                        type="text"
+                                        id="display-name"
+                                        name="display_name"
+                                        value={formValues.displayName}
+                                        onChange={handleInputChange}
+                                        disabled
+                                    />
+                                )}
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="first-name">First name</label>
+                                {editMode ? (
+                                    <input
+                                        type="text"
+                                        id="first-name"
+                                        name="first_name"
+                                        value={formValues.firstName}
+                                        onChange={handleInputChange}
+                                    />
+                                ) : (
+                                    <input
+                                        type="text"
+                                        id="first-name"
+                                        name="first_name"
+                                        value={formValues.firstName}
+                                        onChange={handleInputChange}
+                                        disabled
+                                    />
+                                )}
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="last-name">Display name</label>
+                                {editMode ? (
+                                    <input
+                                        type="text"
+                                        id="last-name"
+                                        name="last_name"
+                                        value={formValues.lastName}
+                                        onChange={handleInputChange}
+                                    />
+                                ) : (
+                                    <input
+                                        type="text"
+                                        id="last-name"
+                                        name="last_name"
+                                        value={formValues.lastName}
+                                        onChange={handleInputChange}
+                                        disabled
+                                    />
+                                )}
+                            </div>
+                            {changePasswordMode ? (
+                                <>
+                                    <div className="form-group">
+                                        <label htmlFor="new_password">New Password</label>
+                                        <input
+                                            type={showPassword ? 'text' : 'password'}
+                                            id="new_password"
+                                            name="new_password"
+                                            value={formValues.password}
+                                            onChange={handleInputChange}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="confirm_password">Confirm Password</label>
+                                        <input
+                                            type={showPassword ? 'text' : 'password'}
+                                            id="confirm_password"
+                                            name="confirm_password"
+                                            value={confirmPassword}
+                                            onChange={handleInputChange}
+                                        />
+                                        <span
+                                            className={`toggle-password ${showPassword ? 'visible' : ''}`}
+                                            onClick={handleTogglePassword}
+                                        >
+                                        </span>
+                                    </div>
+                                </>
+                            ) : <></>}
+                            {err && <div className="error-message">{err}</div>}
+                            {editMode ? <></> : (
+                                <>
+                                    <div className="form-group">
+                                        <button
+                                            type="button"
+                                            className="change-password-btn"
+                                            onClick={toggleChangePasswordMode}
+                                        >
+                                            {changePasswordMode ? 'Cancel' : 'Change password'}
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+                            {changePasswordMode ? (
+                                <button
+                                    type='button'
+                                    className='save-btn'
+                                    onClick={handleChangePassword}
+                                >Save</button>
+                            ) : (
+                                <>
+                                    <div className="form-group">
+                                        {
+                                            editMode ? (
+                                                <button
+                                                    type="button"
+                                                    className="save-btn"
+                                                    onClick={handleSave}
+                                                > Save</button>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    className="update-btn"
+                                                    onClick={handleEditModeToggle}
+                                                >Update</button>
+                                            )}
+                                    </div>
+                                </>
+                            )}
+                        </form>
+                    </section>
+                </div>
+            </main>
+
+            <footer>
+                <p>© 2024 AniHub</p>
+            </footer>
+        </>
+    )
+}
+
+export default Profile;

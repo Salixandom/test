@@ -1,0 +1,107 @@
+  .request-body {
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(31, 41, 55);
+    color: #fff;
+    box-sizing: border-box;
+
+  }
+
+  .request-container {
+    width: 70%;
+    margin: 30px auto;
+    padding: 30px;
+    line-height: 1.6;
+    background-color: #10161D;
+    border-radius: 20px;
+  }
+
+  .request-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: rgb(229, 231, 235);
+    ;
+  }
+
+  /* Form styling */
+  .request-form-group {
+    margin-bottom: 15px;
+    margin-top: 15px;
+    margin-right: 15px;
+  }
+
+  .request-form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .request-form-group input[type="text"],
+  .request-form-group input[type="url"],
+  .request-form-group select,
+  .request-form-group textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #333;
+    background-color: rgb(22, 30, 41);
+    color: #fff;
+    border-radius: 4px;
+  }
+
+  .request-form-group select {
+    cursor: pointer;
+    transform: translate(-1025px, 10px);
+    width: 30%;
+  }
+
+  .request-form-group textarea {
+    height: 100px;
+  }
+
+
+
+  /* Button styling */
+  .request-submit-button {
+    display: block;
+    width: 10%;
+    padding: 10px;
+    border: none;
+    background-color: #e91e63;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 7px;
+  }
+
+  .request-submit-btn {
+
+    display: flex;
+    justify-content: center;
+    margin-right: 10px;
+  }
+
+  .request-submit-button:hover {
+    background-color: #c20846;
+  }
+
+
+  .request-checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    flex-basis: calc(50% - 15px);
+    gap: 15px;
+    /* This adds space between the checkboxes */
+  }
+
+  .request-checkbox-group label {
+    display: flex;
+    align-items: center;
+  }
+
+
+  .request-checkbox-group input[type="checkbox"] {
+    margin-right: 5px;
+  }
+
+  .request-type-of-anime {
+    width: 101.5%;
+  }

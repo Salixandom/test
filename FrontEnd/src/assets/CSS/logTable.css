@@ -1,0 +1,67 @@
+/* App.css */
+.table {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.th,
+.td {
+    text-align: left;
+    padding: 8px;
+    /* border-bottom: 1px solid #ddd; */
+    color: #e6e6e6;
+    width: max-content;
+}
+
+.th {
+    background-color: #e13b3b;
+    color: white;
+    top: 0;
+    position: sticky;
+    /* Make header sticky */
+    z-index: 1;
+    /* Ensure the header is above other content */
+}
+
+.tr:nth-child(even) {
+    background-color: #151c26;
+}
+
+.tr:nth-child(odd) {
+    background-color: #1a2330;
+}
+
+.tableContainer {
+    overflow-y: auto;
+    max-height: 700px;
+    /* Adjust this value based on your needs */
+    border-radius: 5px;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+}
+
+/* Custom scrollbar styles */
+.tableContainer::-webkit-scrollbar {
+    width: 12px;
+    /* Adjust the width of the scrollbar */
+}
+
+.tableContainer::-webkit-scrollbar-track {
+    background: #1a2330;
+    /* Color of the tracking area */
+    border-radius: 10px;
+}
+
+.tableContainer::-webkit-scrollbar-thumb {
+    background-color: #cfcccc;
+    /* Color of the scrollbar itself */
+    border-radius: 10px;
+    border: 3px solid #1a2330;
+    /* Creates padding around the scrollbar */
+}
+
+.tableContainer::-webkit-scrollbar-thumb:hover {
+    background: #d12e2e;
+    /* Color of scrollbar on hover */
+}
